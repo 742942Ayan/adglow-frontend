@@ -1,0 +1,1 @@
+export default function VerifyOtp() { return <div>Verify OTP Page</div>; }
