@@ -8,7 +8,8 @@ import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import WatchAds from './pages/WatchAds';
 import Withdraw from './pages/Withdraw';
-import TeamTree from './pages/TeamTree'; // 👈 NEW
+import TeamTree from './pages/TeamTree';
+import KycUpload from './pages/KycUpload'; // ✅ NEW
 
 function App() {
   return (
@@ -21,7 +22,8 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/watch-ads" element={<WatchAds />} />
         <Route path="/withdraw" element={<Withdraw />} />
-        <Route path="/team" element={<TeamTree />} /> {/* 👈 NEW */}
+        <Route path="/team" element={<TeamTree />} />
+        <Route path="/kyc" element={<KycUpload />} /> {/* ✅ NEW */}
       </Routes>
     </Router>
   );
