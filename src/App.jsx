@@ -1,1 +1,1 @@
-// TODO: Add code
+<Route path="/watch-ads" element={<WatchAds />} />
