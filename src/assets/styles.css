@@ -1,1 +1,8 @@
-
+/* src/assets/styles.css */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f4f6f8;
+}
+button {
+  transition: all 0.3s ease;
+}
