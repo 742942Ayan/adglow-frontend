@@ -10,7 +10,8 @@ import WatchAds from './pages/WatchAds';
 import Withdraw from './pages/Withdraw';
 import TeamTree from './pages/TeamTree';
 import KycUpload from './pages/KycUpload';
-import Leaderboard from './pages/Leaderboard'; // ✅ NEW
+import Leaderboard from './pages/Leaderboard';
+import Profile from './pages/Profile'; // ✅ NEW
 
 function App() {
   return (
@@ -25,7 +26,8 @@ function App() {
         <Route path="/withdraw" element={<Withdraw />} />
         <Route path="/team" element={<TeamTree />} />
         <Route path="/kyc" element={<KycUpload />} />
-        <Route path="/leaderboard" element={<Leaderboard />} /> {/* ✅ NEW */}
+        <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/profile" element={<Profile />} /> {/* ✅ NEW */}
       </Routes>
     </Router>
   );
