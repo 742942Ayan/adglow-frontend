@@ -1,1 +1,4 @@
-// TODO: Add code
+// Example (Login.jsx me use)
+import logo from '../assets/logo.png';
+
+<img src={logo} alt="AdGlow Logo" width="150" />
