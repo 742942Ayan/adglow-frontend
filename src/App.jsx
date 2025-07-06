@@ -8,7 +8,7 @@ import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import WatchAds from './pages/WatchAds';
 import Withdraw from './pages/Withdraw';
-// Future: TeamTree, KycUpload, Leaderboard, Profile, etc.
+import TeamTree from './pages/TeamTree'; // 👈 NEW
 
 function App() {
   return (
@@ -21,10 +21,10 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/watch-ads" element={<WatchAds />} />
         <Route path="/withdraw" element={<Withdraw />} />
+        <Route path="/team" element={<TeamTree />} /> {/* 👈 NEW */}
       </Routes>
     </Router>
   );
 }
 
 export default App;
-
