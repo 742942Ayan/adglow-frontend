@@ -1,182 +1,91 @@
 import React, { useState } from 'react';
-import { isValidEmail } from '../utils/validators';
-import { generateOTP } from '../utils/generateOTP';
-import api from '../utils/api';
 
 const Register = () => {
-  const [form, setForm] = useState({
-    name: '',
+  const [formData, setFormData] = useState({
+    fullName: '',
     fatherName: '',
-    email: '',
-    village: '',
-    state: '',
+    dob: '',
+    gender: '',
+    address: '',
     country: '',
+    state: '',
+    district: '',
+    pincode: '',
+    email: '',
+    emailOtp: '',
     mobile: '',
     referralCode: '',
-    emailOTP: '',
   });
 
-  const [generatedOTP, setGeneratedOTP] = useState('');
+  const [referrerName, setReferrerName] = useState('');
   const [otpSent, setOtpSent] = useState(false);
-  const [emailVerified, setEmailVerified] = useState(false);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSendOTP = () => {
-    if (!isValidEmail(form.email)) {
-      alert('Please enter a valid email.');
-      return;
-    }
-
-    const otp = generateOTP();
-    setGeneratedOTP(otp);
+  const sendOtp = () => {
+    if (!formData.email) return alert('Please enter your email first');
     setOtpSent(true);
-
-    // 🔄 Replace with actual backend call later
-    console.log(`Simulated email OTP: ${otp}`);
-    alert('OTP sent to your email (simulated)');
-  };
-
-  const handleVerifyOTP = () => {
-    if (form.emailOTP === generatedOTP) {
-      setEmailVerified(true);
-      alert('✅ Email verified successfully!');
-    } else {
-      alert('❌ Invalid OTP');
-    }
+    alert(`OTP sent to ${formData.email}`);
+    // TODO: Integrate backend email OTP sender
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!emailVerified) {
-      alert('Please verify your email first.');
-      return;
-    }
-
-    for (const key in form) {
-      if (!form[key] && key !== 'emailOTP') {
-        alert(`Please fill ${key} field.`);
-        return;
-      }
-    }
-
-    alert('✅ Registration successful (Simulated)');
-    // TODO: Send data to backend here using api.post('/register', form)
+    // TODO: Submit form data to API
+    console.log(formData);
+    alert('✅ Registered Successfully!');
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <form
+        className="bg-white p-6 rounded-xl shadow-md w-full max-w-2xl space-y-4"
         onSubmit={handleSubmit}
-        className="bg-white shadow-xl p-6 rounded-xl w-full max-w-xl space-y-4"
       >
-        <h2 className="text-2xl font-bold mb-4 text-center">Register to AdGlow</h2>
+        <h2 className="text-2xl font-bold text-center mb-4">Register to AdGlow</h2>
 
-        <input
-          type="text"
-          name="name"
-          placeholder="Full Name"
-          value={form.name}
-          onChange={handleChange}
-          required
-          className="input"
-        />
-        <input
-          type="text"
-          name="fatherName"
-          placeholder="Father's Name"
-          value={form.fatherName}
-          onChange={handleChange}
-          required
-          className="input"
-        />
-        <div className="flex gap-2">
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={handleChange}
-            required
-            className="input flex-1"
-            disabled={emailVerified}
-          />
-          <button
-            type="button"
-            onClick={handleSendOTP}
-            className="btn"
-            disabled={otpSent || emailVerified}
-          >
-            Send OTP
-          </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input name="fullName" value={formData.fullName} onChange={handleChange} required placeholder="Full Name" className="input" />
+          <input name="fatherName" value={formData.fatherName} onChange={handleChange} required placeholder="Father's Name" className="input" />
+          
+          <input type="date" name="dob" value={formData.dob} onChange={handleChange} required className="input" />
+
+          <select name="gender" value={formData.gender} onChange={handleChange} required className="input">
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+
+          <input name="address" value={formData.address} onChange={handleChange} required placeholder="Full Address" className="input" />
+          <input name="country" value={formData.country} onChange={handleChange} required placeholder="Country" className="input" />
+          <input name="state" value={formData.state} onChange={handleChange} required placeholder="State" className="input" />
+          <input name="district" value={formData.district} onChange={handleChange} required placeholder="District" className="input" />
+          
+          <input name="pincode" value={formData.pincode} onChange={handleChange} required placeholder="PIN Code / Zipcode" className="input" />
+          <input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="Email" className="input" />
+          
+          <div className="flex space-x-2">
+            <input name="emailOtp" value={formData.emailOtp} onChange={handleChange} required placeholder="Enter Email OTP" className="input w-full" />
+            <button type="button" onClick={sendOtp} className="bg-blue-600 text-white px-3 rounded-lg">Send OTP</button>
+          </div>
+
+          <input name="mobile" value={formData.mobile} onChange={handleChange} required placeholder="Mobile Number" className="input" />
+          <input name="referralCode" value={formData.referralCode} onChange={(e) => {
+            handleChange(e);
+            setReferrerName("Zaki Ahmad"); // 🔁 TODO: Dynamic lookup
+          }} required placeholder="Referral Code" className="input" />
         </div>
 
-        {otpSent && !emailVerified && (
-          <div className="flex gap-2">
-            <input
-              type="text"
-              name="emailOTP"
-              placeholder="Enter OTP"
-              value={form.emailOTP}
-              onChange={handleChange}
-              className="input flex-1"
-            />
-            <button type="button" onClick={handleVerifyOTP} className="btn">
-              Verify OTP
-            </button>
-          </div>
+        {referrerName && (
+          <p className="text-sm text-green-600">Referrer Name: {referrerName}</p>
         )}
 
-        <input
-          type="text"
-          name="village"
-          placeholder="Village/Town"
-          value={form.village}
-          onChange={handleChange}
-          required
-          className="input"
-        />
-        <input
-          type="text"
-          name="state"
-          placeholder="State"
-          value={form.state}
-          onChange={handleChange}
-          required
-          className="input"
-        />
-        <input
-          type="text"
-          name="country"
-          placeholder="Country"
-          value={form.country}
-          onChange={handleChange}
-          required
-          className="input"
-        />
-        <input
-          type="tel"
-          name="mobile"
-          placeholder="Mobile Number"
-          value={form.mobile}
-          onChange={handleChange}
-          required
-          className="input"
-        />
-        <input
-          type="text"
-          name="referralCode"
-          placeholder="Referral Code"
-          value={form.referralCode}
-          onChange={handleChange}
-          required
-          className="input"
-        />
-
-        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-lg">
-          Register
+        <button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold">
+          🚀 Register
         </button>
       </form>
     </div>
