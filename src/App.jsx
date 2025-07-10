@@ -19,6 +19,8 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminTasks from './pages/admin/AdminTasks';
 import KycApprovals from './pages/admin/KycApprovals';
 import WithdrawalApprovals from './pages/admin/WithdrawalApprovals'; // ✅ NEW
+import AdminCommissionSettings from './pages/admin/AdminCommissionSettings'; // ✅
+
 
 function App() {
   return (
@@ -43,6 +45,7 @@ function App() {
         <Route path="/admin/tasks" element={<AdminTasks />} />
         <Route path="/admin/kyc-approvals" element={<KycApprovals />} />
         <Route path="/admin/withdrawals" element={<WithdrawalApprovals />} /> {/* ✅ NEW */}
+        <Route path="/admin/commissions" element={<AdminCommissionSettings />} />
       </Routes>
     </Router>
   );
