@@ -13,9 +13,10 @@ import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
 import Tasks from './pages/Tasks';
 
+// ✅ Admin Pages
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminTasks from './pages/admin/AdminTasks'; // ✅ NEW Import
+import AdminTasks from './pages/admin/AdminTasks'; // ✅ NEW
 
 function App() {
   return (
@@ -37,7 +38,7 @@ function App() {
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/tasks" element={<AdminTasks />} /> {/* ✅ NEW Route */}
+        <Route path="/admin/tasks" element={<AdminTasks />} /> {/* ✅ ADDED */}
       </Routes>
     </Router>
   );
