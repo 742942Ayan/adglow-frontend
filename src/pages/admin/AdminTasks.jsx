@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AdminTasks = () => {
   const [tasks, setTasks] = useState([]);
@@ -10,6 +11,20 @@ const AdminTasks = () => {
     reward: '',
     time: '',
   });
+
+  const navigate = useNavigate();
+
+  // ✅ Block unauthenticated admin access
+  useEffect(() => {
+    if (!localStorage.getItem('admin_logged_in')) {
+      navigate('/admin/login');
+    }
+  }, [navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('admin_logged_in');
+    navigate('/admin/login');
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -38,10 +53,19 @@ const AdminTasks = () => {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">📋 Admin Task Manager</h1>
+    <div className="min-h-screen bg-gray-100 p-6">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">📋 Admin Task Manager</h1>
+        <button
+          onClick={handleLogout}
+          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+        >
+          🔒 Logout
+        </button>
+      </div>
 
-      {/* Form */}
+      {/* Add Task Form */}
       <div className="bg-white p-4 rounded shadow mb-6">
         <h2 className="text-lg font-semibold mb-2">➕ Add New Task</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
