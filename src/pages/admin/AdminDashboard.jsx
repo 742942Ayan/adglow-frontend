@@ -46,9 +46,16 @@ const AdminDashboard = () => {
 
         <Link
           to="/admin/withdrawals"
-          className="block p-4 bg-green-500 text-white rounded shadow hover:bg-green-600"
+          className="block p-4 bg-yellow-500 text-white rounded shadow hover:bg-yellow-600"
         >
           💸 Withdrawal Approvals
+        </Link>
+
+        <Link
+          to="/admin/commissions"
+          className="block p-4 bg-green-600 text-white rounded shadow hover:bg-green-700"
+        >
+          ⚙️ Referral Settings
         </Link>
       </div>
     </div>
