@@ -14,7 +14,8 @@ import Profile from './pages/Profile';
 import Tasks from './pages/Tasks';
 
 import AdminLogin from './pages/admin/AdminLogin';
-import AdminDashboard from './pages/admin/AdminDashboard'; // ✅ New
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminTasks from './pages/admin/AdminTasks'; // ✅ NEW Import
 
 function App() {
   return (
@@ -35,7 +36,8 @@ function App() {
 
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/dashboard" element={<AdminDashboard />} /> {/* ✅ */}
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/tasks" element={<AdminTasks />} /> {/* ✅ NEW Route */}
       </Routes>
     </Router>
   );
