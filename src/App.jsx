@@ -11,8 +11,10 @@ import TeamTree from './pages/TeamTree';
 import KycUpload from './pages/KycUpload';
 import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
-import Tasks from './pages/Tasks'; // ✅ Task Module
-import AdminLogin from './pages/admin/AdminLogin'; // ✅ Admin Panel login
+import Tasks from './pages/Tasks';
+
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminDashboard from './pages/admin/AdminDashboard'; // ✅ New
 
 function App() {
   return (
@@ -24,7 +26,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/tasks" element={<Tasks />} /> {/* ✅ WatchAds replaced */}
+        <Route path="/tasks" element={<Tasks />} />
         <Route path="/withdraw" element={<Withdraw />} />
         <Route path="/team" element={<TeamTree />} />
         <Route path="/kyc" element={<KycUpload />} />
@@ -33,7 +35,7 @@ function App() {
 
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
-        {/* Later we’ll add: /admin/dashboard, /admin/tasks etc. */}
+        <Route path="/admin/dashboard" element={<AdminDashboard />} /> {/* ✅ */}
       </Routes>
     </Router>
   );
