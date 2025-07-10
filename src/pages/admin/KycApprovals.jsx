@@ -1,22 +1,24 @@
 // src/pages/admin/KycApprovals.jsx
 import React, { useEffect, useState } from 'react';
 
-const mockKycList = [
+const mockKycData = [
   {
     id: 1,
-    name: 'Ravi Kumar',
+    userId: 'USR001',
+    fullName: 'Ravi Kumar',
     email: 'ravi@example.com',
+    documentType: 'Aadhaar Card',
+    documentUrl: 'https://via.placeholder.com/300x200?text=KYC+Doc',
     status: 'pending',
-    aadharUrl: 'https://via.placeholder.com/150',
-    panUrl: 'https://via.placeholder.com/150',
   },
   {
     id: 2,
-    name: 'Pooja Sharma',
-    email: 'pooja@example.com',
+    userId: 'USR002',
+    fullName: 'Priya Sharma',
+    email: 'priya@example.com',
+    documentType: 'PAN Card',
+    documentUrl: 'https://via.placeholder.com/300x200?text=KYC+Doc',
     status: 'pending',
-    aadharUrl: 'https://via.placeholder.com/150',
-    panUrl: 'https://via.placeholder.com/150',
   },
 ];
 
@@ -24,75 +26,63 @@ const KycApprovals = () => {
   const [kycList, setKycList] = useState([]);
 
   useEffect(() => {
-    // 🔁 Later: fetch from backend
-    setKycList(mockKycList);
+    // Fetch from backend later
+    setKycList(mockKycData);
   }, []);
 
-  const handleApprove = (id) => {
-    const updated = kycList.map((k) =>
-      k.id === id ? { ...k, status: 'approved' } : k
+  const updateStatus = (id, status) => {
+    const updated = kycList.map((kyc) =>
+      kyc.id === id ? { ...kyc, status } : kyc
     );
     setKycList(updated);
-    alert('✅ KYC Approved');
-  };
-
-  const handleReject = (id) => {
-    const updated = kycList.map((k) =>
-      k.id === id ? { ...k, status: 'rejected' } : k
-    );
-    setKycList(updated);
-    alert('❌ KYC Rejected');
+    alert(`✅ KYC ${status.toUpperCase()} for user ID ${id}`);
+    // Later: Send update to backend
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">📝 KYC Approval Panel</h1>
+    <div className="min-h-screen bg-gray-100 p-6">
+      <h1 className="text-2xl font-bold mb-6">✅ KYC Approvals</h1>
 
       {kycList.length === 0 ? (
-        <p>No pending KYC found.</p>
+        <p>No pending KYC submissions.</p>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-6">
           {kycList.map((kyc) => (
             <div
               key={kyc.id}
-              className="p-4 bg-white rounded shadow flex flex-col md:flex-row md:items-center md:justify-between"
+              className="bg-white rounded-lg shadow p-4 flex flex-col md:flex-row gap-6"
             >
-              <div>
-                <p className="font-bold text-lg">{kyc.name}</p>
-                <p className="text-sm text-gray-600">{kyc.email}</p>
-                <div className="flex gap-4 mt-2">
-                  <a
-                    href={kyc.aadharUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 underline"
-                  >
-                    Aadhar
-                  </a>
-                  <a
-                    href={kyc.panUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 underline"
-                  >
-                    PAN
-                  </a>
-                </div>
-              </div>
-
-              <div className="flex gap-3 mt-4 md:mt-0">
-                <button
-                  onClick={() => handleApprove(kyc.id)}
-                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                >
-                  Approve
-                </button>
-                <button
-                  onClick={() => handleReject(kyc.id)}
-                  className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-                >
-                  Reject
-                </button>
+              <img
+                src={kyc.documentUrl}
+                alt="KYC Document"
+                className="w-full md:w-64 h-auto border rounded"
+              />
+              <div className="flex-1">
+                <p><strong>User ID:</strong> {kyc.userId}</p>
+                <p><strong>Full Name:</strong> {kyc.fullName}</p>
+                <p><strong>Email:</strong> {kyc.email}</p>
+                <p><strong>Document Type:</strong> {kyc.documentType}</p>
+                <p><strong>Status:</strong>{' '}
+                  <span className={`font-bold ${kyc.status === 'approved' ? 'text-green-600' : kyc.status === 'rejected' ? 'text-red-600' : 'text-yellow-600'}`}>
+                    {kyc.status.toUpperCase()}
+                  </span>
+                </p>
+                {kyc.status === 'pending' && (
+                  <div className="mt-4 flex gap-3">
+                    <button
+                      onClick={() => updateStatus(kyc.id, 'approved')}
+                      className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                    >
+                      ✅ Approve
+                    </button>
+                    <button
+                      onClick={() => updateStatus(kyc.id, 'rejected')}
+                      className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                    >
+                      ❌ Reject
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))}
