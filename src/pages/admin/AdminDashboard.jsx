@@ -43,6 +43,13 @@ const AdminDashboard = () => {
         >
           ✅ KYC Approvals
         </Link>
+
+        <Link
+          to="/admin/withdrawals"
+          className="block p-4 bg-green-500 text-white rounded shadow hover:bg-green-600"
+        >
+          💸 Withdrawal Approvals
+        </Link>
       </div>
     </div>
   );
