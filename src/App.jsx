@@ -20,6 +20,8 @@ import AdminTasks from './pages/admin/AdminTasks';
 import KycApprovals from './pages/admin/KycApprovals';
 import WithdrawalApprovals from './pages/admin/WithdrawalApprovals';
 import ReferralSettings from './pages/admin/ReferralSettings'; // ✅ Route added
+import UserManagement from './pages/admin/UserManagement'; // ✅ NEW
+
 
 function App() {
   return (
@@ -45,6 +47,7 @@ function App() {
         <Route path="/admin/kyc-approvals" element={<KycApprovals />} />
         <Route path="/admin/withdrawals" element={<WithdrawalApprovals />} />
         <Route path="/admin/commissions" element={<ReferralSettings />} /> {/* ✅ New */}
+        <Route path="/admin/users" element={<UserManagement />} /> {/* ✅ ADDED */}
       </Routes>
     </Router>
   );
