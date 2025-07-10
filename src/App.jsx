@@ -16,7 +16,8 @@ import Tasks from './pages/Tasks';
 // ✅ Admin Pages
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminTasks from './pages/admin/AdminTasks'; // ✅ NEW
+import AdminTasks from './pages/admin/AdminTasks';
+import KycApprovals from './pages/admin/KycApprovals'; // ✅ NEW KYC Route
 
 function App() {
   return (
@@ -38,7 +39,8 @@ function App() {
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/tasks" element={<AdminTasks />} /> {/* ✅ ADDED */}
+        <Route path="/admin/tasks" element={<AdminTasks />} />
+        <Route path="/admin/kyc-approvals" element={<KycApprovals />} /> {/* ✅ ADDED */}
       </Routes>
     </Router>
   );
