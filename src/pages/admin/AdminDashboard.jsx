@@ -57,6 +57,13 @@ const AdminDashboard = () => {
         >
           ⚙️ Referral Settings
         </Link>
+
+        <Link
+          to="/admin/users"
+          className="block p-4 bg-indigo-500 text-white rounded shadow hover:bg-indigo-600"
+        >
+          👥 View All Users
+        </Link>
       </div>
     </div>
   );
