@@ -6,12 +6,12 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
-import WatchAds from './pages/WatchAds';
 import Withdraw from './pages/Withdraw';
 import TeamTree from './pages/TeamTree';
 import KycUpload from './pages/KycUpload';
 import Leaderboard from './pages/Leaderboard';
-import Profile from './pages/Profile'; // ✅ NEW
+import Profile from './pages/Profile';
+import Tasks from './pages/Tasks'; // ✅ NEW — Task module added
 
 function App() {
   return (
@@ -22,12 +22,12 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/watch-ads" element={<WatchAds />} />
+        <Route path="/tasks" element={<Tasks />} /> {/* ✅ Replaced WatchAds */}
         <Route path="/withdraw" element={<Withdraw />} />
         <Route path="/team" element={<TeamTree />} />
         <Route path="/kyc" element={<KycUpload />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
-        <Route path="/profile" element={<Profile />} /> {/* ✅ NEW */}
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </Router>
   );
