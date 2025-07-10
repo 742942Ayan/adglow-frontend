@@ -37,8 +37,12 @@ const AdminDashboard = () => {
           ➕ Manage Tasks
         </Link>
 
-        {/* Future admin modules can be linked below */}
-        {/* <Link to="/admin/kyc" className="...">Manage KYC</Link> */}
+        <Link
+          to="/admin/kyc-approvals"
+          className="block p-4 bg-purple-500 text-white rounded shadow hover:bg-purple-600"
+        >
+          ✅ KYC Approvals
+        </Link>
       </div>
     </div>
   );
