@@ -1,11 +1,33 @@
 // src/pages/admin/AdminDashboard.jsx
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
+
+  // ✅ Block unauthenticated access
+  useEffect(() => {
+    if (!localStorage.getItem('admin_logged_in')) {
+      navigate('/admin/login');
+    }
+  }, [navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('admin_logged_in');
+    navigate('/admin/login');
+  };
+
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">👨‍💼 Admin Dashboard</h1>
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">👨‍💼 Admin Dashboard</h1>
+        <button
+          onClick={handleLogout}
+          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+        >
+          🔒 Logout
+        </button>
+      </div>
 
       <div className="space-y-4">
         <Link
@@ -14,7 +36,9 @@ const AdminDashboard = () => {
         >
           ➕ Manage Tasks
         </Link>
-        {/* More modules can be added here */}
+
+        {/* Future admin modules can be linked below */}
+        {/* <Link to="/admin/kyc" className="...">Manage KYC</Link> */}
       </div>
     </div>
   );
