@@ -21,6 +21,8 @@ import KycApprovals from './pages/admin/KycApprovals';
 import WithdrawalApprovals from './pages/admin/WithdrawalApprovals';
 import ReferralSettings from './pages/admin/ReferralSettings'; // ✅ Route added
 import UserManagement from './pages/admin/UserManagement'; // ✅ NEW
+import UserList from './pages/admin/UserList';
+
 
 
 function App() {
@@ -48,6 +50,7 @@ function App() {
         <Route path="/admin/withdrawals" element={<WithdrawalApprovals />} />
         <Route path="/admin/commissions" element={<ReferralSettings />} /> {/* ✅ New */}
         <Route path="/admin/users" element={<UserManagement />} /> {/* ✅ ADDED */}
+        <Route path="/admin/users" element={<UserList />} />
       </Routes>
     </Router>
   );
