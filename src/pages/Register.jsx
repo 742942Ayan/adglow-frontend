@@ -27,31 +27,37 @@ const Register = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // ✅ STEP 1: Send OTP
+  // ✅ STEP 1: Send OTP (all fields sent to backend to create user)
   const sendOtp = async () => {
-    if (!formData.fullName || !formData.email) {
+    const {
+      fullName, fatherName, dob, gender, address,
+      country, state, district, pincode, email,
+      mobile, referralCode
+    } = formData;
+
+    if (!fullName || !email) {
       return alert('Please enter Full Name and Email');
     }
 
     try {
       setLoading(true);
-    await axios.post('https://adglow-backend.onrender.com/api/auth/register', {
-  fullName: formData.fullName,
-  fatherName: formData.fatherName,
-  dob: formData.dob,
-  gender: formData.gender,
-  address: formData.address,
-  country: formData.country,
-  state: formData.state,
-  district: formData.district,
-  pincode: formData.pincode,
-  mobile: formData.mobile,
-  email: formData.email,
-  password: "adglow123",  // Temporary password
-  referredBy: formData.referralCode || ""
-});
+      await axios.post('https://adglow-backend.onrender.com/api/auth/register', {
+        fullName,
+        fatherName,
+        dob,
+        gender,
+        address,
+        country,
+        state,
+        district,
+        pincode,
+        email,
+        mobile,
+        password: "adglow123", // default password
+        referredBy: referralCode || ""
+      });
       setOtpSent(true);
-      alert(`✅ OTP sent to ${formData.email}`);
+      alert(`✅ OTP sent to ${email}`);
     } catch (err) {
       console.error(err);
       alert(err.response?.data?.message || '❌ Failed to send OTP');
