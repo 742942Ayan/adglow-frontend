@@ -35,12 +35,21 @@ const Register = () => {
 
     try {
       setLoading(true);
-      await axios.post('https://adglow-backend.onrender.com/api/auth/register', {
-        fullName: formData.fullName,
-        email: formData.email,
-        password: "adglow123", // static password
-        referredBy: formData.referralCode || ""
-      });
+    await axios.post('https://adglow-backend.onrender.com/api/auth/register', {
+  fullName: formData.fullName,
+  fatherName: formData.fatherName,
+  dob: formData.dob,
+  gender: formData.gender,
+  address: formData.address,
+  country: formData.country,
+  state: formData.state,
+  district: formData.district,
+  pincode: formData.pincode,
+  mobile: formData.mobile,
+  email: formData.email,
+  password: "adglow123",  // Temporary password
+  referredBy: formData.referralCode || ""
+});
       setOtpSent(true);
       alert(`✅ OTP sent to ${formData.email}`);
     } catch (err) {
