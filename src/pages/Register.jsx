@@ -20,48 +20,58 @@ const Register = () => {
 
   const [referrerName, setReferrerName] = useState('');
   const [otpSent, setOtpSent] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // ✅ STEP 1: Send OTP to email
+  // ✅ STEP 1: Send OTP
   const sendOtp = async () => {
     if (!formData.fullName || !formData.email) {
       return alert('Please enter Full Name and Email');
     }
 
     try {
-      const res = await axios.post('https://adglow-backend.onrender.com/api/auth/register', {
+      setLoading(true);
+      await axios.post('https://adglow-backend.onrender.com/api/auth/register', {
         fullName: formData.fullName,
         email: formData.email,
-        password: "adglow123", // temporary static password
+        password: "adglow123", // static password
         referredBy: formData.referralCode || ""
       });
-
       setOtpSent(true);
       alert(`✅ OTP sent to ${formData.email}`);
     } catch (err) {
       console.error(err);
-      alert('❌ Failed to send OTP');
+      alert(err.response?.data?.message || '❌ Failed to send OTP');
+    } finally {
+      setLoading(false);
     }
   };
 
-  // ✅ STEP 2: Verify OTP on submit
+  // ✅ STEP 2: Verify OTP
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.email || !formData.emailOtp) {
+      return alert("Please enter both Email and OTP");
+    }
 
     try {
-      const res = await axios.post('https://adglow-backend.onrender.com/api/auth/verify-otp', {
+      setLoading(true);
+      await axios.post('https://adglow-backend.onrender.com/api/auth/verify-otp', {
         email: formData.email,
         otp: formData.emailOtp
       });
 
       alert('✅ Registered & OTP Verified!');
+      setFormData(prev => ({ ...prev, emailOtp: '' }));
     } catch (err) {
       console.error(err);
-      alert('❌ OTP verification failed');
+      alert(err.response?.data?.message || '❌ OTP verification failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -92,13 +102,15 @@ const Register = () => {
 
           <div className="flex space-x-2">
             <input name="emailOtp" value={formData.emailOtp} onChange={handleChange} required placeholder="Enter Email OTP" className="input w-full" />
-            <button type="button" onClick={sendOtp} className="bg-blue-600 text-white px-3 rounded-lg">Send OTP</button>
+            <button type="button" onClick={sendOtp} className="bg-blue-600 text-white px-3 rounded-lg" disabled={loading}>
+              {loading ? "Sending..." : "Send OTP"}
+            </button>
           </div>
 
           <input name="mobile" value={formData.mobile} onChange={handleChange} required placeholder="Mobile Number" className="input" />
           <input name="referralCode" value={formData.referralCode} onChange={(e) => {
             handleChange(e);
-            setReferrerName("Zaki Ahmad"); // 🔁 TODO: Dynamic lookup
+            setReferrerName("Zaki Ahmad"); // ✅ Static for now
           }} required placeholder="Referral Code" className="input" />
         </div>
 
@@ -106,8 +118,8 @@ const Register = () => {
           <p className="text-sm text-green-600">Referrer Name: {referrerName}</p>
         )}
 
-        <button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold">
-          🚀 Register
+        <button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold" disabled={loading}>
+          {loading ? "Please wait..." : "🚀 Register"}
         </button>
       </form>
     </div>
