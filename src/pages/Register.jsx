@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -25,18 +26,43 @@ const Register = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const sendOtp = () => {
-    if (!formData.email) return alert('Please enter your email first');
-    setOtpSent(true);
-    alert(`OTP sent to ${formData.email}`);
-    // TODO: Integrate backend email OTP sender
+  // ✅ STEP 1: Send OTP to email
+  const sendOtp = async () => {
+    if (!formData.fullName || !formData.email) {
+      return alert('Please enter Full Name and Email');
+    }
+
+    try {
+      const res = await axios.post('https://adglow-backend.onrender.com/api/auth/register', {
+        fullName: formData.fullName,
+        email: formData.email,
+        password: "adglow123", // temporary static password
+        referredBy: formData.referralCode || ""
+      });
+
+      setOtpSent(true);
+      alert(`✅ OTP sent to ${formData.email}`);
+    } catch (err) {
+      console.error(err);
+      alert('❌ Failed to send OTP');
+    }
   };
 
-  const handleSubmit = (e) => {
+  // ✅ STEP 2: Verify OTP on submit
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Submit form data to API
-    console.log(formData);
-    alert('✅ Registered Successfully!');
+
+    try {
+      const res = await axios.post('https://adglow-backend.onrender.com/api/auth/verify-otp', {
+        email: formData.email,
+        otp: formData.emailOtp
+      });
+
+      alert('✅ Registered & OTP Verified!');
+    } catch (err) {
+      console.error(err);
+      alert('❌ OTP verification failed');
+    }
   };
 
   return (
@@ -50,24 +76,20 @@ const Register = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input name="fullName" value={formData.fullName} onChange={handleChange} required placeholder="Full Name" className="input" />
           <input name="fatherName" value={formData.fatherName} onChange={handleChange} required placeholder="Father's Name" className="input" />
-          
           <input type="date" name="dob" value={formData.dob} onChange={handleChange} required className="input" />
-
           <select name="gender" value={formData.gender} onChange={handleChange} required className="input">
             <option value="">Select Gender</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
             <option value="Other">Other</option>
           </select>
-
           <input name="address" value={formData.address} onChange={handleChange} required placeholder="Full Address" className="input" />
           <input name="country" value={formData.country} onChange={handleChange} required placeholder="Country" className="input" />
           <input name="state" value={formData.state} onChange={handleChange} required placeholder="State" className="input" />
           <input name="district" value={formData.district} onChange={handleChange} required placeholder="District" className="input" />
-          
           <input name="pincode" value={formData.pincode} onChange={handleChange} required placeholder="PIN Code / Zipcode" className="input" />
           <input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="Email" className="input" />
-          
+
           <div className="flex space-x-2">
             <input name="emailOtp" value={formData.emailOtp} onChange={handleChange} required placeholder="Enter Email OTP" className="input w-full" />
             <button type="button" onClick={sendOtp} className="bg-blue-600 text-white px-3 rounded-lg">Send OTP</button>
