@@ -110,8 +110,8 @@ const Register = () => {
     try {
       setLoading(true);
       await axios.post('https://adglow-backend.onrender.com/api/auth/verify-otp', {
-        email: formData.email,
-        otp: formData.emailOtp
+        email: formData.email.trim().toLowerCase(),
+  otp: formData.emailOtp.trim()
       });
 
       alert('✅ OTP verified successfully!');
