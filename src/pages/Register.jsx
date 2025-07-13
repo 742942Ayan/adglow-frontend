@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Country, State, City } from 'country-state-city';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -26,12 +27,39 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
+  const [countryList, setCountryList] = useState([]);
+  const [stateList, setStateList] = useState([]);
+  const [cityList, setCityList] = useState([]);
+
+  // ⬇️ Load countries on mount
+  useEffect(() => {
+    setCountryList(Country.getAllCountries());
+  }, []);
+
+  // ⬇️ Load states when country changes
+  useEffect(() => {
+    if (formData.country) {
+      const states = State.getStatesOfCountry(formData.country);
+      setStateList(states);
+      setFormData(prev => ({ ...prev, state: '', district: '' }));
+      setCityList([]);
+    }
+  }, [formData.country]);
+
+  // ⬇️ Load cities when state changes
+  useEffect(() => {
+    if (formData.state && formData.country) {
+      const cities = City.getCitiesOfState(formData.country, formData.state);
+      setCityList(cities);
+      setFormData(prev => ({ ...prev, district: '' }));
+    }
+  }, [formData.state]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // ✅ STEP 1: Send OTP (create temporary user)
   const sendOtp = async () => {
     const {
       fullName, fatherName, dob, gender, address,
@@ -49,7 +77,7 @@ const Register = () => {
 
     try {
       setLoading(true);
-      const res = await axios.post('https://adglow-backend.onrender.com/api/auth/register', {
+      await axios.post('https://adglow-backend.onrender.com/api/auth/register', {
         fullName,
         fatherName,
         dob,
@@ -74,7 +102,6 @@ const Register = () => {
     }
   };
 
-  // ✅ STEP 2: Verify OTP
   const verifyOtp = async () => {
     if (!formData.email || !formData.emailOtp) {
       return alert("Please enter both Email and OTP");
@@ -82,7 +109,7 @@ const Register = () => {
 
     try {
       setLoading(true);
-      const res = await axios.post('https://adglow-backend.onrender.com/api/auth/verify-otp', {
+      await axios.post('https://adglow-backend.onrender.com/api/auth/verify-otp', {
         email: formData.email,
         otp: formData.emailOtp
       });
@@ -113,28 +140,51 @@ const Register = () => {
             <option value="Other">Other</option>
           </select>
           <input name="address" value={formData.address} onChange={handleChange} required placeholder="Full Address" className="input" />
-          <input name="country" value={formData.country} onChange={handleChange} required placeholder="Country" className="input" />
-          <input name="state" value={formData.state} onChange={handleChange} required placeholder="State" className="input" />
-          <input name="district" value={formData.district} onChange={handleChange} required placeholder="District" className="input" />
+
+          {/* 🌍 Country Dropdown */}
+          <select name="country" value={formData.country} onChange={handleChange} required className="input">
+            <option value="">Select Country</option>
+            {countryList.map((country) => (
+              <option key={country.isoCode} value={country.isoCode}>{country.name}</option>
+            ))}
+          </select>
+
+          {/* 🌎 State Dropdown */}
+          <select name="state" value={formData.state} onChange={handleChange} required className="input">
+            <option value="">Select State</option>
+            {stateList.map((state) => (
+              <option key={state.isoCode} value={state.isoCode}>{state.name}</option>
+            ))}
+          </select>
+
+          {/* 🏙️ District/City Dropdown */}
+          <select name="district" value={formData.district} onChange={handleChange} required className="input">
+            <option value="">Select City/District</option>
+            {cityList.map((city) => (
+              <option key={city.name} value={city.name}>{city.name}</option>
+            ))}
+          </select>
+
           <input name="pincode" value={formData.pincode} onChange={handleChange} required placeholder="PIN Code / Zipcode" className="input" />
           <input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="Email" className="input" />
           <input name="mobile" value={formData.mobile} onChange={handleChange} required placeholder="Mobile Number" className="input" />
+
           <input name="referralCode" value={formData.referralCode} onChange={(e) => {
             handleChange(e);
             setReferrerName("Zaki Ahmad");
           }} required placeholder="Referral Code" className="input" />
-          {referrerName && (
-            <p className="text-sm text-green-600">Referrer Name: {referrerName}</p>
-          )}
 
           <input type="password" name="password" value={formData.password} onChange={handleChange} required placeholder="Create Password" className="input" />
           <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required placeholder="Confirm Password" className="input" />
         </div>
 
+        {referrerName && (
+          <p className="text-sm text-green-600">Referrer Name: {referrerName}</p>
+        )}
+
         {/* ✅ OTP Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
           <input name="emailOtp" value={formData.emailOtp} onChange={handleChange} placeholder="Enter OTP" className="input" />
-
           {!emailVerified ? (
             <>
               <button type="button" onClick={sendOtp} className="bg-blue-600 text-white px-4 py-2 rounded-md" disabled={loading}>
@@ -155,7 +205,7 @@ const Register = () => {
             e.preventDefault();
             if (!emailVerified) return alert("Please verify your email before registering.");
             alert("✅ Registration completed!");
-            // You can redirect or handle final step here
+            // redirect or next step
           }}
           className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold"
         >
