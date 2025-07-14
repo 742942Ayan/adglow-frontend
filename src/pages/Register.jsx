@@ -31,12 +31,10 @@ const Register = () => {
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
 
-  // ⬇️ Load countries on mount
   useEffect(() => {
     setCountryList(Country.getAllCountries());
   }, []);
 
-  // ⬇️ Load states when country changes
   useEffect(() => {
     if (formData.country) {
       const states = State.getStatesOfCountry(formData.country);
@@ -46,7 +44,6 @@ const Register = () => {
     }
   }, [formData.country]);
 
-  // ⬇️ Load cities when state changes
   useEffect(() => {
     if (formData.state && formData.country) {
       const cities = City.getCitiesOfState(formData.country, formData.state);
@@ -87,7 +84,7 @@ const Register = () => {
         state,
         district,
         pincode,
-        email,
+        email: email.trim().toLowerCase(),
         mobile,
         password,
         referredBy: referralCode || ""
@@ -111,7 +108,7 @@ const Register = () => {
       setLoading(true);
       await axios.post('https://adglow-backend.onrender.com/api/auth/verify-otp', {
         email: formData.email.trim().toLowerCase(),
-  otp: formData.emailOtp.trim()
+        otp: formData.emailOtp.trim()
       });
 
       alert('✅ OTP verified successfully!');
@@ -140,40 +137,31 @@ const Register = () => {
             <option value="Other">Other</option>
           </select>
           <input name="address" value={formData.address} onChange={handleChange} required placeholder="Full Address" className="input" />
-
-          {/* 🌍 Country Dropdown */}
           <select name="country" value={formData.country} onChange={handleChange} required className="input">
             <option value="">Select Country</option>
             {countryList.map((country) => (
               <option key={country.isoCode} value={country.isoCode}>{country.name}</option>
             ))}
           </select>
-
-          {/* 🌎 State Dropdown */}
           <select name="state" value={formData.state} onChange={handleChange} required className="input">
             <option value="">Select State</option>
             {stateList.map((state) => (
               <option key={state.isoCode} value={state.isoCode}>{state.name}</option>
             ))}
           </select>
-
-          {/* 🏙️ District/City Dropdown */}
           <select name="district" value={formData.district} onChange={handleChange} required className="input">
             <option value="">Select City/District</option>
             {cityList.map((city) => (
               <option key={city.name} value={city.name}>{city.name}</option>
             ))}
           </select>
-
           <input name="pincode" value={formData.pincode} onChange={handleChange} required placeholder="PIN Code / Zipcode" className="input" />
           <input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="Email" className="input" />
           <input name="mobile" value={formData.mobile} onChange={handleChange} required placeholder="Mobile Number" className="input" />
-
           <input name="referralCode" value={formData.referralCode} onChange={(e) => {
             handleChange(e);
             setReferrerName("Zaki Ahmad");
           }} required placeholder="Referral Code" className="input" />
-
           <input type="password" name="password" value={formData.password} onChange={handleChange} required placeholder="Create Password" className="input" />
           <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required placeholder="Confirm Password" className="input" />
         </div>
@@ -182,7 +170,6 @@ const Register = () => {
           <p className="text-sm text-green-600">Referrer Name: {referrerName}</p>
         )}
 
-        {/* ✅ OTP Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
           <input name="emailOtp" value={formData.emailOtp} onChange={handleChange} placeholder="Enter OTP" className="input" />
           {!emailVerified ? (
@@ -205,7 +192,6 @@ const Register = () => {
             e.preventDefault();
             if (!emailVerified) return alert("Please verify your email before registering.");
             alert("✅ Registration completed!");
-            // redirect or next step
           }}
           className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold"
         >
