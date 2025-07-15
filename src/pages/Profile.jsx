@@ -8,7 +8,7 @@ const Profile = () => {
 
   // 🔐 Fetch user data from backend
   useEffect(() => {
-    const token = localStorage.getItem("adglow_token"); // ✅ यहीं बदलाव हुआ है
+    const token = localStorage.getItem("adglow_token");
     if (!token) {
       navigate("/login");
       return;
@@ -22,7 +22,7 @@ const Profile = () => {
       .then((res) => setUser(res.data))
       .catch((err) => {
         console.error("❌ Error:", err);
-        alert("प्रोफाइल लोड नहीं हो सकी। कृपया लॉगिन करें।");
+        alert("Failed to load profile. Please log in again.");
         localStorage.removeItem("adglow_token");
         navigate("/login");
       });
@@ -31,30 +31,30 @@ const Profile = () => {
   const handleCopy = () => {
     if (user?.referralCode) {
       navigator.clipboard.writeText(user.referralCode);
-      alert('📋 रेफरल कोड कॉपी हो गया!');
+      alert('📋 Referral code copied!');
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("adglow_token"); // ✅ token का नाम consistent
-    alert("आप लॉगआउट हो चुके हैं!");
+    localStorage.removeItem("adglow_token");
+    alert("You have been logged out.");
     navigate("/login");
   };
 
-  if (!user) return <div className="text-center mt-10">लोड हो रहा है...</div>;
+  if (!user) return <div className="text-center mt-10">Loading...</div>;
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 flex justify-center items-center">
       <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-md text-center">
-        <h2 className="text-2xl font-bold mb-4">👤 मेरी प्रोफाइल</h2>
+        <h2 className="text-2xl font-bold mb-4">👤 My Profile</h2>
         <div className="space-y-2 text-left">
-          <p><strong>नाम:</strong> {user.fullName}</p>
-          <p><strong>ईमेल:</strong> {user.email}</p>
+          <p><strong>Name:</strong> {user.fullName}</p>
+          <p><strong>Email:</strong> {user.email}</p>
           <p>
-            <strong>रेफरल कोड:</strong>{" "}
+            <strong>Referral Code:</strong>{" "}
             <span className="text-blue-600 font-mono">{user.referralCode}</span>
           </p>
-          <p><strong>KYC स्थिति:</strong> {user.kycStatus || "Pending"}</p>
+          <p><strong>KYC Status:</strong> {user.kycStatus || "Pending"}</p>
         </div>
 
         <div className="mt-6 space-y-3">
@@ -62,13 +62,13 @@ const Profile = () => {
             onClick={handleCopy}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg"
           >
-            📋 रेफरल कोड कॉपी करें
+            📋 Copy Referral Code
           </button>
           <button
             onClick={handleLogout}
             className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg"
           >
-            🔓 लॉगआउट करें
+            🔓 Logout
           </button>
         </div>
       </div>
