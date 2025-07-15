@@ -72,7 +72,9 @@ const KycUpload = () => {
     kycBackImageUrl
   } = userKyc;
 
-  const canResubmit = kycStatus === 'rejected' && kycAttempts < 5;
+  const canSubmitKyc =
+    !kycStatus ||
+    (kycStatus === 'rejected' && kycAttempts < 5);
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
@@ -84,7 +86,7 @@ const KycUpload = () => {
         {kycStatus === 'pending' && <p className="text-yellow-600 text-center">⌛ KYC is under review.</p>}
         {kycStatus === 'rejected' && (
           <div className="text-red-600 text-center mb-2">
-            ❌ KYC Rejected {kycAttempts ? `(${kycAttempts} attempts)` : ''}<br />
+            ❌ KYC Rejected ({kycAttempts || 0} attempts)<br />
             <span className="text-sm italic">Reason: {kycRejectionReason || "Not specified"}</span>
           </div>
         )}
@@ -113,7 +115,7 @@ const KycUpload = () => {
         )}
 
         {/* KYC Form */}
-        {(kycStatus !== 'approved' && canResubmit) && (
+        {canSubmitKyc && (
           <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
             <input type="text" name="fullName" placeholder="Full Name" value={form.fullName} onChange={handleChange} className="w-full px-4 py-2 border rounded" required />
             <input type="text" name="fatherName" placeholder="Father's Name" value={form.fatherName} onChange={handleChange} className="w-full px-4 py-2 border rounded" required />
