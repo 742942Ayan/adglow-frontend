@@ -9,11 +9,13 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!email || !password) {
-      return alert("Please enter email and password");
+      return alert("कृपया ईमेल और पासवर्ड भरें");
     }
 
     try {
       setLoading(true);
+
+      // 🔐 API कॉल
       const res = await axios.post("https://adglow-backend.onrender.com/api/auth/login", {
         email: email.trim().toLowerCase(),
         password,
@@ -21,15 +23,15 @@ const Login = () => {
 
       const { token, user } = res.data;
 
-      // Save to localStorage
-      localStorage.setItem("adglow_token", token);
+      // ✅ LocalStorage में token और user सेव करें
+      localStorage.setItem("token", token); // ✅ IMPORTANT - यहीं सुधार हुआ है
       localStorage.setItem("adglow_user", JSON.stringify(user));
 
-      alert("✅ Login Successful");
+      alert("✅ लॉगिन सफल");
       window.location.href = "/dashboard";
     } catch (err) {
       console.error("Login Error:", err);
-      alert(err.response?.data?.message || "❌ Login failed");
+      alert(err.response?.data?.message || "❌ लॉगिन असफल");
     } finally {
       setLoading(false);
     }
@@ -38,12 +40,12 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login to AdGlow</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">AdGlow में लॉगिन करें</h2>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <input
             type="email"
-            placeholder="Enter your email"
+            placeholder="अपना ईमेल डालें"
             className="w-full px-4 py-2 border rounded-lg"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -51,7 +53,7 @@ const Login = () => {
           />
           <input
             type="password"
-            placeholder="Enter your password"
+            placeholder="अपना पासवर्ड डालें"
             className="w-full px-4 py-2 border rounded-lg"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -62,13 +64,13 @@ const Login = () => {
             className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
             disabled={loading}
           >
-            {loading ? "Logging in..." : "🚀 Login"}
+            {loading ? "लॉगिन हो रहा है..." : "🚀 लॉगिन"}
           </button>
         </form>
 
         <div className="text-center mt-4">
           <a href="/forgot-password" className="text-sm text-blue-600 hover:underline">
-            Forgot your password?
+            पासवर्ड भूल गए?
           </a>
         </div>
       </div>
