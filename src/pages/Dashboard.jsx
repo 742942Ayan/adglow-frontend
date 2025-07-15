@@ -1,27 +1,36 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const Dashboard = () => {
-  const [referralEarnings, setReferralEarnings] = useState(0);
-  const [walletBalance, setWalletBalance] = useState(0);
-  const [adsWatchedToday, setAdsWatchedToday] = useState(0);
+  const [userData, setUserData] = useState(null);
   const totalGoal = 3;
 
   useEffect(() => {
-    // TODO: Replace with real API calls
-    const fetchUserStats = async () => {
-      // Example dummy values
-      setReferralEarnings(74.50);
-      setWalletBalance(310.00);
-      setAdsWatchedToday(2);
+    const token = localStorage.getItem("token");
+
+    const fetchUserProfile = async () => {
+      try {
+        const res = await axios.get("https://adglow-backend.onrender.com/api/user/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUserData(res.data);
+      } catch (err) {
+        console.error("❌ Error fetching user profile:", err);
+        alert("Unable to fetch user data");
+      }
     };
 
-    fetchUserStats();
+    fetchUserProfile();
   }, []);
+
+  if (!userData) return <div className="text-center mt-10">Loading...</div>;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
       <div className="bg-white shadow-lg rounded-xl p-6 w-full max-w-xl text-center">
-        <h1 className="text-3xl font-bold mb-4">👋 Welcome to AdGlow</h1>
+        <h1 className="text-3xl font-bold mb-4">👋 Welcome, {userData.fullName}</h1>
         <p className="text-lg text-gray-700 mb-2">Start watching tasks and earn daily rewards!</p>
 
         <div className="mt-4 space-y-3">
@@ -29,13 +38,16 @@ const Dashboard = () => {
             🎯 Today’s Goal: Watch {totalGoal} Tasks
           </p>
           <p className="text-yellow-600">
-            ✅ Completed: {adsWatchedToday} / {totalGoal}
+            ✅ Completed: {userData.adsWatchedToday || 0} / {totalGoal}
           </p>
           <p className="text-blue-600">
-            💼 Referral Earnings: ₹{referralEarnings.toFixed(2)}
+            💼 Referral Earnings: ₹{userData.referralEarnings?.toFixed(2) || 0}
           </p>
           <p className="text-purple-600">
-            💰 Wallet Balance: ₹{walletBalance.toFixed(2)}
+            💰 Wallet Balance: ₹{userData.walletBalance?.toFixed(2) || 0}
+          </p>
+          <p className="text-gray-600">
+            🧾 KYC Status: {userData.kycStatus || 'pending'}
           </p>
         </div>
       </div>
