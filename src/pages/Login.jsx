@@ -24,7 +24,7 @@ const Login = () => {
       const { token, user } = res.data;
 
       // ✅ Save token and user to localStorage
-      localStorage.setItem("token", token); // ✅ Token key corrected here
+      localStorage.setItem("adglow_token", token); ✅
       localStorage.setItem("adglow_user", JSON.stringify(user));
 
       alert("✅ Login successful");
