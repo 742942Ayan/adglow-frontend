@@ -1,14 +1,15 @@
+// src/pages/ForgotPassword.jsx
 import React, { useState } from 'react';
 import OtpInput from '../components/OtpInput';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const ForgotPassword = () => {
+  const [step, setStep] = useState("sendOtp");
   const [email, setEmail] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   const sendOtp = async (e) => {
     e.preventDefault();
@@ -16,7 +17,7 @@ const ForgotPassword = () => {
       setLoading(true);
       const res = await axios.post('https://adglow-backend.onrender.com/api/auth/forgot-password', { email });
       alert(res.data.message);
-      setOtpSent(true);
+      setStep("verifyOtp");
     } catch (err) {
       alert(err.response?.data?.message || "Something went wrong");
     } finally {
@@ -30,9 +31,31 @@ const ForgotPassword = () => {
       setLoading(true);
       const res = await axios.post('https://adglow-backend.onrender.com/api/auth/verify-otp', { email, otp });
       alert(res.data.message);
-      navigate("/reset-password", { state: { email } });
+      setStep("setPassword"); // ✅ Show new password form
     } catch (err) {
       alert(err.response?.data?.message || "Invalid OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updatePassword = async (e) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const res = await axios.post('https://adglow-backend.onrender.com/api/auth/update-password', {
+        email,
+        newPassword
+      });
+      alert(res.data.message);
+      window.location.href = "/login"; // ✅ Redirect to login
+    } catch (err) {
+      alert(err.response?.data?.message || "Password update failed");
     } finally {
       setLoading(false);
     }
@@ -43,7 +66,7 @@ const ForgotPassword = () => {
       <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Forgot Password</h2>
 
-        {!otpSent ? (
+        {step === "sendOtp" && (
           <form onSubmit={sendOtp} className="space-y-4">
             <input
               type="email"
@@ -61,7 +84,9 @@ const ForgotPassword = () => {
               {loading ? 'Sending OTP...' : 'Send OTP'}
             </button>
           </form>
-        ) : (
+        )}
+
+        {step === "verifyOtp" && (
           <form onSubmit={verifyOtp} className="space-y-4">
             <OtpInput value={otp} onChange={setOtp} />
             <button
@@ -70,6 +95,34 @@ const ForgotPassword = () => {
               disabled={loading}
             >
               {loading ? 'Verifying...' : 'Verify OTP'}
+            </button>
+          </form>
+        )}
+
+        {step === "setPassword" && (
+          <form onSubmit={updatePassword} className="space-y-4">
+            <input
+              type="password"
+              placeholder="New Password"
+              className="w-full px-4 py-2 border rounded-lg"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Confirm New Password"
+              className="w-full px-4 py-2 border rounded-lg"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+            <button
+              type="submit"
+              className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700"
+              disabled={loading}
+            >
+              {loading ? 'Updating Password...' : 'Update Password'}
             </button>
           </form>
         )}
