@@ -6,7 +6,7 @@ const Dashboard = () => {
   const totalGoal = 3;
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("adglow_token");
 
     if (!token) {
       alert("Session expired. Please login again.");
@@ -25,7 +25,7 @@ const Dashboard = () => {
       } catch (error) {
         if (error.response && error.response.status === 401) {
           alert("Session expired or unauthorized. Please login again.");
-          localStorage.removeItem("token");
+          localStorage.removeItem("adglow_token");
           window.location.href = "/login";
         } else {
           console.error("Error fetching user profile:", error);
