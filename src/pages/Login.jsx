@@ -8,14 +8,14 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
     if (!email || !password) {
-      return alert("Please enter email and password");
+      return alert("⚠️ Please enter both email and password");
     }
 
     try {
       setLoading(true);
 
-      // 🔐 API call
       const res = await axios.post("https://adglow-backend.onrender.com/api/auth/login", {
         email: email.trim().toLowerCase(),
         password,
@@ -23,15 +23,18 @@ const Login = () => {
 
       const { token, user } = res.data;
 
-      // ✅ Save token and user to localStorage
+      // ✅ Save to localStorage
       localStorage.setItem("adglow_token", token);
       localStorage.setItem("adglow_user", JSON.stringify(user));
 
-      alert("✅ Login successful");
+      // ✅ Set token in axios default headers
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+      alert("✅ Login successful!");
       window.location.href = "/dashboard";
     } catch (err) {
-      console.error("Login Error:", err);
-      alert(err.response?.data?.message || "❌ Login failed");
+      console.error("❌ Login Error:", err);
+      alert(err?.response?.data?.message || "Login failed. Try again.");
     } finally {
       setLoading(false);
     }
@@ -61,7 +64,7 @@ const Login = () => {
           />
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+            className={`w-full text-white py-2 rounded-lg ${loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'}`}
             disabled={loading}
           >
             {loading ? "Logging in..." : "🚀 Login"}
