@@ -8,7 +8,6 @@ const Dashboard = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    // 🔐 If no token, redirect to login
     if (!token) {
       alert("Session expired. Please login again.");
       window.location.href = "/login";
@@ -17,18 +16,21 @@ const Dashboard = () => {
 
     const fetchUserProfile = async () => {
       try {
-        console.log("📦 Token:", token); // Debug
         const res = await axios.get("https://adglow-backend.onrender.com/api/user/profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         setUserData(res.data);
-      } catch (err) {
-        console.error("❌ Error fetching user profile:", err);
-        alert("Unable to fetch user data. Please login again.");
-        localStorage.removeItem("token");
-        window.location.href = "/login";
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          alert("Session expired or unauthorized. Please login again.");
+          localStorage.removeItem("token");
+          window.location.href = "/login";
+        } else {
+          console.error("Error fetching user profile:", error);
+          alert("Something went wrong. Please try again later.");
+        }
       }
     };
 
