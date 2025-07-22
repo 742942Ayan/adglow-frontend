@@ -17,13 +17,19 @@ const KycUpload = () => {
   const token = localStorage.getItem("adglow_token");
 
   useEffect(() => {
-    if (!token) return;
+    if (!token) {
+      alert("Session expired. Please log in again.");
+      return;
+    }
 
     axios.get("https://adglow-backend.onrender.com/api/user/profile", {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setUserKyc(res.data))
-      .catch(err => console.error("Error loading KYC:", err));
+      .catch(err => {
+        console.error("Error loading profile:", err);
+        alert("Failed to load profile. Please try logging in again.");
+      });
   }, []);
 
   const handleChange = (e) => {
@@ -37,6 +43,12 @@ const KycUpload = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!token) {
+      alert("❌ You are not logged in. Please log in and try again.");
+      return;
+    }
+
     const { fullName, fatherName, dob, documentType, documentNumber, frontImage, backImage } = form;
     if (!fullName || !fatherName || !dob || !documentType || !documentNumber || !frontImage || !backImage) {
       return alert("Please fill all required fields.");
@@ -58,7 +70,11 @@ const KycUpload = () => {
       window.location.reload();
     } catch (err) {
       console.error("KYC Submit Error:", err);
-      alert("❌ KYC submission failed");
+      if (err.response?.status === 401) {
+        alert("❌ Unauthorized. Please log in again.");
+      } else {
+        alert("❌ KYC submission failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -81,7 +97,6 @@ const KycUpload = () => {
       <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-xl">
         <h2 className="text-2xl font-bold text-center mb-4">📝 KYC Upload</h2>
 
-        {/* Status Messages */}
         {kycStatus === 'approved' && <p className="text-green-600 text-center">✅ Your KYC is approved.</p>}
         {kycStatus === 'pending' && <p className="text-yellow-600 text-center">⌛ KYC is under review.</p>}
         {kycStatus === 'rejected' && (
@@ -96,7 +111,6 @@ const KycUpload = () => {
           </p>
         )}
 
-        {/* Already Uploaded Document Previews */}
         {(kycFrontImageUrl || kycBackImageUrl) && (
           <div className="grid grid-cols-2 gap-4 mt-4 mb-4">
             {kycFrontImageUrl && (
@@ -114,7 +128,6 @@ const KycUpload = () => {
           </div>
         )}
 
-        {/* KYC Form */}
         {canSubmitKyc && (
           <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
             <input type="text" name="fullName" placeholder="Full Name" value={form.fullName} onChange={handleChange} className="w-full px-4 py-2 border rounded" required />
