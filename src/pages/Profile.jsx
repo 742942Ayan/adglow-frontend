@@ -6,7 +6,6 @@ const Profile = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  // 🔐 Fetch user data from backend
   useEffect(() => {
     const token = localStorage.getItem("adglow_token");
     if (!token) {
@@ -19,10 +18,16 @@ const Profile = () => {
         Authorization: `Bearer ${token}`
       }
     })
-      .then((res) => setUser(res.data))
+      .then((res) => {
+        setUser(res.data);
+      })
       .catch((err) => {
-        console.error("❌ Error:", err);
-        alert("Failed to load profile. Please log in again.");
+        console.error("❌ Error:", err.response?.data || err.message);
+        if (err.response?.status === 401) {
+          alert("Session expired. Please login again.");
+        } else {
+          alert("Failed to load profile. Please try again.");
+        }
         localStorage.removeItem("adglow_token");
         navigate("/login");
       });
