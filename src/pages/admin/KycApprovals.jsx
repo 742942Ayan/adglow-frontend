@@ -4,123 +4,115 @@ import axios from "axios";
 const AdminKycApproval = () => {
   const [kycList, setKycList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState("");
 
-  const fetchKycRequests = async () => {
-    try {
-      const token = localStorage.getItem("adglow_admin_token");
-      const res = await axios.get("https://your-backend-url/api/admin/kyc-requests", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setKycList(res.data);
-    } catch (error) {
-      console.error("Error fetching KYC data", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const userToken = localStorage.getItem("adglow_token");
+    setToken(userToken);
+    fetchKycRequests(userToken);
+  }, []);
 
-  const handleAction = async (kycId, action) => {
+  const fetchKycRequests = async (token) => {
     try {
-      const token = localStorage.getItem("adglow_admin_token");
-      await axios.post(
-        `https://your-backend-url/api/admin/kyc-${action}`,
-        { kycId },
+      const res = await axios.get(
+        "https://your-backend-url.com/api/admin/kyc/all",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      // Refresh list
-      fetchKycRequests();
+      setKycList(res.data.kycs);
     } catch (error) {
-      console.error(`Error on KYC ${action}`, error);
+      console.error("Error fetching KYC requests:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchKycRequests();
-  }, []);
+  const handleKycAction = async (userId, status) => {
+    try {
+      await axios.post(
+        "https://your-backend-url.com/api/admin/kyc/verify",
+        { userId, status },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      fetchKycRequests(token); // Refresh list after action
+    } catch (error) {
+      console.error("Error updating KYC status:", error);
+    }
+  };
 
-  if (loading) return <p>Loading KYC requests...</p>;
+  const statusColor = {
+    pending: "orange",
+    approved: "green",
+    rejected: "red",
+  };
+
+  if (loading) return <div>Loading KYC data...</div>;
 
   return (
-    <div style={styles.container}>
-      <h2>Pending KYC Approvals</h2>
+    <div style={{ padding: "20px" }}>
+      <h2>Admin KYC Approval Panel</h2>
       {kycList.length === 0 ? (
-        <p>No pending KYC submissions.</p>
+        <p>No KYC requests found.</p>
       ) : (
-        kycList.map((kyc) => (
-          <div key={kyc._id} style={styles.card}>
-            <p><strong>Full Name:</strong> {kyc.fullName}</p>
-            <p><strong>Father's Name:</strong> {kyc.fatherName}</p>
-            <p><strong>DOB:</strong> {kyc.dob}</p>
-            <p><strong>Document Type:</strong> {kyc.documentType}</p>
-            <p><strong>Document Number:</strong> {kyc.documentNumber}</p>
-            <div style={styles.images}>
-              <div>
-                <p>Front Image:</p>
-                <img src={kyc.frontImage} alt="Front" style={styles.img} />
-              </div>
-              <div>
-                <p>Back Image:</p>
-                <img src={kyc.backImage} alt="Back" style={styles.img} />
-              </div>
-            </div>
-            <div style={styles.buttons}>
-              <button onClick={() => handleAction(kyc._id, "approve")} style={styles.approve}>Approve</button>
-              <button onClick={() => handleAction(kyc._id, "reject")} style={styles.reject}>Reject</button>
-            </div>
-          </div>
-        ))
+        <table border="1" cellPadding="10" style={{ width: "100%", marginTop: "20px" }}>
+          <thead>
+            <tr>
+              <th>Full Name</th>
+              <th>Document Type</th>
+              <th>Document Number</th>
+              <th>Front Image</th>
+              <th>Back Image</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {kycList.map((kyc) => (
+              <tr key={kyc._id}>
+                <td>{kyc.fullName}</td>
+                <td>{kyc.documentType}</td>
+                <td>{kyc.documentNumber}</td>
+                <td>
+                  <img
+                    src={`https://your-backend-url.com/${kyc.documentFront}`}
+                    alt="Front"
+                    width="100"
+                  />
+                </td>
+                <td>
+                  <img
+                    src={`https://your-backend-url.com/${kyc.documentBack}`}
+                    alt="Back"
+                    width="100"
+                  />
+                </td>
+                <td style={{ color: statusColor[kyc.status] }}>{kyc.status}</td>
+                <td>
+                  {kyc.status === "pending" ? (
+                    <>
+                      <button onClick={() => handleKycAction(kyc.user, "approved")}>Approve</button>
+                      <button onClick={() => handleKycAction(kyc.user, "rejected")} style={{ marginLeft: "10px" }}>
+                        Reject
+                      </button>
+                    </>
+                  ) : (
+                    <span>Already {kyc.status}</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   );
-};
-
-const styles = {
-  container: {
-    padding: "20px",
-  },
-  card: {
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    padding: "20px",
-    marginBottom: "20px",
-    backgroundColor: "#f9f9f9",
-  },
-  images: {
-    display: "flex",
-    gap: "20px",
-    marginTop: "10px",
-  },
-  img: {
-    width: "200px",
-    height: "auto",
-    borderRadius: "5px",
-  },
-  buttons: {
-    marginTop: "15px",
-  },
-  approve: {
-    backgroundColor: "green",
-    color: "#fff",
-    padding: "10px 15px",
-    marginRight: "10px",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-  },
-  reject: {
-    backgroundColor: "red",
-    color: "#fff",
-    padding: "10px 15px",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-  },
 };
 
 export default AdminKycApproval;
