@@ -1,0 +1,14 @@
+// src/api/referralApi.js (add this method)
+export const getReferralHistory = async (token) => {
+  try {
+    const res = await axios.get("/api/referral/history", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data.history;
+  } catch (err) {
+    console.error("Fetch history failed:", err.message);
+    return [];
+  }
+};
