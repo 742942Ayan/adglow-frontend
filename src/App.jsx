@@ -18,11 +18,9 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminTasks from './pages/admin/AdminTasks';
 import KycApprovals from './pages/admin/KycApprovals';
 import WithdrawalApprovals from './pages/admin/WithdrawalApprovals';
-import ReferralSettings from './pages/admin/ReferralSettings'; // ✅ Route added
-import UserManagement from './pages/admin/UserManagement'; // ✅ NEW
+import ReferralSettings from './pages/admin/ReferralSettings';
+import UserManagement from './pages/admin/UserManagement';
 import UserList from './pages/admin/UserList';
-
-
 
 function App() {
   return (
@@ -46,9 +44,9 @@ function App() {
         <Route path="/admin/tasks" element={<AdminTasks />} />
         <Route path="/admin/kyc-approvals" element={<KycApprovals />} />
         <Route path="/admin/withdrawals" element={<WithdrawalApprovals />} />
-        <Route path="/admin/commissions" element={<ReferralSettings />} /> {/* ✅ New */}
-        <Route path="/admin/users" element={<UserManagement />} /> {/* ✅ ADDED */}
-        <Route path="/admin/users" element={<UserList />} />
+        <Route path="/admin/commissions" element={<ReferralSettings />} />
+        <Route path="/admin/user-management" element={<UserManagement />} />
+        <Route path="/admin/user-list" element={<UserList />} />
       </Routes>
     </Router>
   );
