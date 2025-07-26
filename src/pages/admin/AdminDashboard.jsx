@@ -1,19 +1,42 @@
-// src/pages/admin/AdminDashboard.jsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    pendingKyc: 0,
+    totalWalletBalance: 0,
+  });
 
-  // ✅ Block unauthenticated access
   useEffect(() => {
     if (!localStorage.getItem('admin_logged_in')) {
       navigate('/admin/login');
     }
   }, [navigate]);
 
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const token = localStorage.getItem('adglow_admin_token');
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin/summary`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setStats(res.data);
+      } catch (err) {
+        console.error('Error fetching stats:', err);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem('admin_logged_in');
+    localStorage.removeItem('adglow_admin_token');
     navigate('/admin/login');
   };
 
@@ -29,6 +52,23 @@ const AdminDashboard = () => {
         </button>
       </div>
 
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="bg-white rounded shadow p-4 text-center">
+          <h2 className="text-xl font-semibold text-gray-700">👥 Total Users</h2>
+          <p className="text-2xl font-bold text-blue-600">{stats.totalUsers}</p>
+        </div>
+        <div className="bg-white rounded shadow p-4 text-center">
+          <h2 className="text-xl font-semibold text-gray-700">📄 Pending KYC</h2>
+          <p className="text-2xl font-bold text-orange-500">{stats.pendingKyc}</p>
+        </div>
+        <div className="bg-white rounded shadow p-4 text-center">
+          <h2 className="text-xl font-semibold text-gray-700">💰 Wallet Balance</h2>
+          <p className="text-2xl font-bold text-green-600">₹{stats.totalWalletBalance.toFixed(2)}</p>
+        </div>
+      </div>
+
+      {/* Navigation Links */}
       <div className="space-y-4">
         <Link
           to="/admin/tasks"
