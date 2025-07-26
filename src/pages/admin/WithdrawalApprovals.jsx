@@ -1,70 +1,80 @@
-// src/pages/admin/WithdrawalApprovals.jsx
 import React, { useEffect, useState } from 'react';
-
-const mockWithdrawals = [
-  {
-    id: 1,
-    userId: 'USR001',
-    fullName: 'Ravi Kumar',
-    amount: 500,
-    method: 'UPI',
-    upiId: 'ravi@upi',
-    status: 'pending',
-  },
-  {
-    id: 2,
-    userId: 'USR002',
-    fullName: 'Priya Sharma',
-    amount: 750,
-    method: 'Bank Transfer',
-    account: 'XXXXXX7890',
-    ifsc: 'SBIN0001234',
-    status: 'pending',
-  },
-];
+import axios from 'axios';
 
 const WithdrawalApprovals = () => {
   const [withdrawals, setWithdrawals] = useState([]);
-  const [rejectReason, setRejectReason] = useState('');
+  const [reasons, setReasons] = useState({});
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    // Later: fetch from backend
-    setWithdrawals(mockWithdrawals);
-  }, []);
+  const API = 'https://adglow-backend.onrender.com';
 
-  const handleApprove = (id) => {
-    const updated = withdrawals.map((w) =>
-      w.id === id ? { ...w, status: 'approved' } : w
-    );
-    setWithdrawals(updated);
-    alert(`✅ Withdrawal request #${id} approved.`);
+  const fetchWithdrawals = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('adglow_admin_token');
+      const res = await axios.get(`${API}/api/admin/withdrawals`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setWithdrawals(res.data || []);
+    } catch (err) {
+      console.error('Error fetching withdrawals:', err.message);
+      alert('Failed to fetch withdrawal requests');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleReject = (id) => {
-    if (!rejectReason.trim()) {
-      alert('❌ Please enter a reason for rejection');
-      return;
+  const handleApprove = async (id) => {
+    try {
+      const token = localStorage.getItem('adglow_admin_token');
+      await axios.post(`${API}/api/admin/withdrawals/approve/${id}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert(`✅ Withdrawal #${id} approved`);
+      fetchWithdrawals();
+    } catch (err) {
+      console.error('Approve error:', err.message);
+      alert('Failed to approve withdrawal');
+    }
+  };
+
+  const handleReject = async (id) => {
+    const reason = reasons[id];
+    if (!reason?.trim()) {
+      return alert('Please provide a reason for rejection');
     }
 
-    const updated = withdrawals.map((w) =>
-      w.id === id ? { ...w, status: 'rejected', reason: rejectReason } : w
-    );
-    setWithdrawals(updated);
-    alert(`❌ Withdrawal request #${id} rejected.\nReason: ${rejectReason}`);
-    setRejectReason('');
+    try {
+      const token = localStorage.getItem('adglow_admin_token');
+      await axios.post(`${API}/api/admin/withdrawals/reject/${id}`, { reason }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert(`❌ Withdrawal #${id} rejected`);
+      setReasons((prev) => ({ ...prev, [id]: '' }));
+      fetchWithdrawals();
+    } catch (err) {
+      console.error('Reject error:', err.message);
+      alert('Failed to reject withdrawal');
+    }
   };
+
+  useEffect(() => {
+    fetchWithdrawals();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <h1 className="text-2xl font-bold mb-6">💰 Withdrawal Approvals</h1>
 
-      {withdrawals.length === 0 ? (
+      {loading ? (
+        <p>Loading...</p>
+      ) : withdrawals.length === 0 ? (
         <p>No withdrawal requests.</p>
       ) : (
         <div className="grid gap-6">
           {withdrawals.map((w) => (
             <div
-              key={w.id}
+              key={w._id}
               className="bg-white p-4 rounded shadow flex flex-col md:flex-row gap-6"
             >
               <div className="flex-1">
@@ -72,6 +82,7 @@ const WithdrawalApprovals = () => {
                 <p><strong>Name:</strong> {w.fullName}</p>
                 <p><strong>Amount:</strong> ₹{w.amount}</p>
                 <p><strong>Method:</strong> {w.method}</p>
+
                 {w.method === 'UPI' && <p><strong>UPI ID:</strong> {w.upiId}</p>}
                 {w.method === 'Bank Transfer' && (
                   <>
@@ -79,6 +90,7 @@ const WithdrawalApprovals = () => {
                     <p><strong>IFSC:</strong> {w.ifsc}</p>
                   </>
                 )}
+
                 <p>
                   <strong>Status:</strong>{' '}
                   <span
@@ -102,7 +114,7 @@ const WithdrawalApprovals = () => {
               {w.status === 'pending' && (
                 <div className="flex flex-col gap-3 w-full md:w-64">
                   <button
-                    onClick={() => handleApprove(w.id)}
+                    onClick={() => handleApprove(w._id)}
                     className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
                   >
                     ✅ Approve
@@ -110,11 +122,13 @@ const WithdrawalApprovals = () => {
                   <textarea
                     placeholder="Reason for rejection"
                     className="border p-2 rounded text-sm"
-                    value={rejectReason}
-                    onChange={(e) => setRejectReason(e.target.value)}
+                    value={reasons[w._id] || ''}
+                    onChange={(e) =>
+                      setReasons((prev) => ({ ...prev, [w._id]: e.target.value }))
+                    }
                   />
                   <button
-                    onClick={() => handleReject(w.id)}
+                    onClick={() => handleReject(w._id)}
                     className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
                   >
                     ❌ Reject
